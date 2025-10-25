@@ -30,6 +30,9 @@
 #include "FT800_TIVA.h"
 #include <stdio.h>
 #include <string.h>
+#include "HAL_I2C.h"
+#include "sensorlib2.h"
+#include <math.h>
 
 
 
@@ -412,6 +415,11 @@ int main(void)
         ComColor(255,255,255);
         ComFgcolor(0, 255, 0);
         ComColor(255,255,255);
+
+        //Ajuste brillo
+        lux=OPT3001_getLux();
+        lux_i=(int)round(lux);
+        ajustaBrillo(lux_i);
 
 
         updateHora();
