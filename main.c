@@ -1,27 +1,3 @@
-
-//
-// hello.c - Simple hello world example.
-//
-// Copyright (c) 2013-2014 Texas Instruments Incorporated.  All rights reserved.
-// Software License Agreement
-//
-// Texas Instruments (TI) is supplying this software for use solely and
-// exclusively on TI's microcontroller products. The software is owned by
-// TI and/or its suppliers, and is protected under applicable copyright
-// laws. You may not combine this software with "viral" open-source
-// software in order to form a larger program.
-//
-// THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
-// NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
-// NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
-// CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
-// DAMAGES, FOR ANY REASON WHATSOEVER.
-//
-// This is part of revision 2.1.0.12573 of the EK-TM4C1294XL Firmware Package.
-//
-//*****************************************************************************
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -33,20 +9,6 @@
 #include "HAL_I2C.h"
 #include "sensorlib2.h"
 #include <math.h>
-
-
-
-/*
- * EJEMPLO 4: Manejo simple del terminal usando las funciones del UARTstdio
- * Es necesario incluir el fichero uartstdio.c, que está en el directorio
- * <TIVAWARE_INSTALL>/utils/
- * Para ello: add files
- *              -> se busca
- *                  ->link to files
- *                      -> create link locations relative to
- *                          -> TIVAWARE_INSTALL
- */
-
 
 //*****************************************************************************
 //
@@ -102,8 +64,9 @@ char auxc[4][2];
 int pin[] = {1,2,3,4};
 int numeroLeidoPantalla[50];
 int i;
-int hora,minuto,segundo,milisegundo=0;
+int hora=0,minuto=0,segundo=0,milisegundo=0;
 int auxLectura=0;
+int parpadeo,parpadeo2;
 
 
 
@@ -125,24 +88,22 @@ int botoneraPin(){
     aux[10]=0;
 
     ComColor(255,255,255);
-    ComFgcolor(0, 255, 0);
+    ComFgcolor(0, 0, 180);
 
-    aux[1]=Boton(HSIZE/2-70-30,20,60,60,30,"1");
-    aux[2]=Boton(HSIZE/2-30,20,60,60,30,"2");
-    aux[3]=Boton(HSIZE/2+70-30,20,60,60,30,"3");
+    aux[1]=Boton(HSIZE/2-150,100,50,50,30,"1");
+    aux[2]=Boton(HSIZE/2-85,100,50,50,30,"2");
+    aux[3]=Boton(HSIZE/2-25,100,50,50,30,"3");
+    aux[4]=Boton(HSIZE/2+35,100,50,50,30,"4");
+    aux[5]=Boton(HSIZE/2+100,100,50,50,30,"5");
 
-    aux[4]=Boton(HSIZE/2-70-30,90,60,60,30,"4");
-    aux[5]=Boton(HSIZE/2-30,90,60,60,30,"5");
-    aux[6]=Boton(HSIZE/2+70-30,90,60,60,30,"6");
+    aux[6]=Boton(HSIZE/2-150,160,50,50,30,"6");
+    aux[7]=Boton(HSIZE/2-85,160,50,50,30,"7");
+    aux[8]=Boton(HSIZE/2-25,160,50,50,30,"8");
+    aux[9]=Boton(HSIZE/2+35,160,50,50,30,"9");
+    aux[0]=Boton(HSIZE/2+100,160,50,50,30,"0");
 
-    aux[7]=Boton(HSIZE/2-70-30,160,60,60,30,"7");
-    aux[8]=Boton(HSIZE/2-30,160,60,60,30,"8");
-    aux[9]=Boton(HSIZE/2+70-30,160,60,60,30,"9");
-
-    aux[0]=Boton(HSIZE/2-30+140,160,60,60,30,"0");
-
-    ComFgcolor(255, 255, 0);
-    aux[10]=Boton(HSIZE/2-30+140,160-70,120,60,30,"OK");
+    ComFgcolor(0, 0, 180);
+    aux[10]=Boton(HSIZE/2-50,4*VSIZE/5,100,45,30,"OK");
 
 
 
@@ -181,7 +142,7 @@ int verificarPinInicial(){
             //break;
         case 1:
             aux[1]=botoneraPin();
-            ComTXT(20,20,25, OPT_CENTER,auxc[0]);
+            ComTXT(HSIZE/2,75,25, OPT_CENTER,auxc[0]);
             if(aux[1]>=0 && aux[1]<=9){
                 sprintf(auxc[cont],"%d",aux[1]);
                 cont=7;
@@ -190,8 +151,8 @@ int verificarPinInicial(){
             //break;
         case 2:
             aux[2]=botoneraPin();
-            ComTXT(20,20,25, OPT_CENTER,auxc[0]);
-            ComTXT(20+20,20,25, OPT_CENTER,auxc[1]);
+            ComTXT(HSIZE/2-10,75,25, OPT_CENTER,auxc[0]);
+            ComTXT(HSIZE/2+10,75,25, OPT_CENTER,auxc[1]);
             if(aux[2]>=0 && aux[2]<=9){
                 sprintf(auxc[cont],"%d",aux[2]);
                 cont=8;
@@ -200,9 +161,9 @@ int verificarPinInicial(){
             //break;
         case 3:
             aux[3]=botoneraPin();
-            ComTXT(20,20,25, OPT_CENTER,auxc[0]);
-            ComTXT(20+20,20,25, OPT_CENTER,auxc[1]);
-            ComTXT(20+20+20,20,25, OPT_CENTER,auxc[2]);
+            ComTXT(HSIZE/2-20,75,25, OPT_CENTER,auxc[0]);
+            ComTXT(HSIZE/2,75,25, OPT_CENTER,auxc[1]);
+            ComTXT(HSIZE/2+20,75,25, OPT_CENTER,auxc[2]);
             if(aux[3]>=0 && aux[3]<=9){
                 sprintf(auxc[cont],"%d",aux[3]);
                 cont=9;
@@ -211,16 +172,17 @@ int verificarPinInicial(){
             //break;
         case 4:
             aux[4]=botoneraPin();
-            ComTXT(20,20,25, OPT_CENTER,auxc[0]);
-            ComTXT(20+20,20,25, OPT_CENTER,auxc[1]);
-            ComTXT(20+20+20,20,25, OPT_CENTER,auxc[2]);
-            ComTXT(20+20+20+20,20,25, OPT_CENTER,auxc[3]);
+            ComTXT(HSIZE/2-30,75,25, OPT_CENTER,auxc[0]);
+            ComTXT(HSIZE/2-10,75,25, OPT_CENTER,auxc[1]);
+            ComTXT(HSIZE/2+10,75,25, OPT_CENTER,auxc[2]);
+            ComTXT(HSIZE/2+30,75,25, OPT_CENTER,auxc[3]);
             if(aux[4]==10){
                 cont=10;
             }
             return 0;
             //break;
         case 5:
+            botoneraPin();
             if(aux[0]==pin[0] && aux[1]==pin[1] && aux[2]==pin[2] && aux[3]==pin[3]){
                 cont=0;
                 aux[0]=0;
@@ -243,25 +205,25 @@ int verificarPinInicial(){
             break;
         case 7:
             if(botoneraPin()==11)cont=2;
-            ComTXT(20,20,25, OPT_CENTER,auxc[0]);
+            ComTXT(HSIZE/2,75,25, OPT_CENTER,auxc[0]);
             break;
         case 8:
             if(botoneraPin()==11)cont=3;
-            ComTXT(20,20,25, OPT_CENTER,auxc[0]);
-            ComTXT(20+20,20,25, OPT_CENTER,auxc[1]);
+            ComTXT(HSIZE/2-10,75,25, OPT_CENTER,auxc[0]);
+            ComTXT(HSIZE/2+10,75,25, OPT_CENTER,auxc[1]);
             break;
         case 9:
             if(botoneraPin()==11)cont=4;
-            ComTXT(20,20,25, OPT_CENTER,auxc[0]);
-            ComTXT(20+20,20,25, OPT_CENTER,auxc[1]);
-            ComTXT(20+20+20,20,25, OPT_CENTER,auxc[2]);
+            ComTXT(HSIZE/2-20,75,25, OPT_CENTER,auxc[0]);
+            ComTXT(HSIZE/2,75,25, OPT_CENTER,auxc[1]);
+            ComTXT(HSIZE/2+20,75,25, OPT_CENTER,auxc[2]);
             break;
         case 10:
             if(botoneraPin()==11)cont=5;
-            ComTXT(20,20,25, OPT_CENTER,auxc[0]);
-            ComTXT(20+20,20,25, OPT_CENTER,auxc[1]);
-            ComTXT(20+20+20,20,25, OPT_CENTER,auxc[2]);
-            ComTXT(20+20+20+20,20,25, OPT_CENTER,auxc[3]);
+            ComTXT(HSIZE/2-30,75,25, OPT_CENTER,auxc[0]);
+            ComTXT(HSIZE/2-10,75,25, OPT_CENTER,auxc[1]);
+            ComTXT(HSIZE/2+10,75,25, OPT_CENTER,auxc[2]);
+            ComTXT(HSIZE/2+30,75,25, OPT_CENTER,auxc[3]);
             break;
         }
         return 0;
@@ -269,6 +231,64 @@ int verificarPinInicial(){
 
 
 int lecturaNumerosPantalla(){
+
+    char auxcc[2];
+
+    if(numeroLeidoPantalla[i]==11) numeroLeidoPantalla[i]=0;
+
+    hora=numeroLeidoPantalla[0]*10 + numeroLeidoPantalla[1];
+    minuto=numeroLeidoPantalla[2]*10 + numeroLeidoPantalla[3];
+    segundo=numeroLeidoPantalla[4]*10 + numeroLeidoPantalla[5];
+
+    if(i<2){
+        ComColor(255*parpadeo,255*parpadeo,255*parpadeo);
+        ComRect(HSIZE/2-45,67,HSIZE/2-20,82,1);
+        ComColor(255*parpadeo2,255*parpadeo2,255*parpadeo2);
+        sprintf(auxcc,"%02d:",hora);
+        ComTXT(HSIZE/2-30,75,28, OPT_CENTER,auxcc);
+
+        ComColor(255,255,255);
+        sprintf(auxcc,"%02d:",minuto);
+        ComTXT(HSIZE/2+3,75,28, OPT_CENTER,auxcc);
+        sprintf(auxcc,"%02d",segundo);
+        ComTXT(HSIZE/2+31,75,28, OPT_CENTER,auxcc);
+    }
+    else if(i<4){
+        ComColor(255*parpadeo,255*parpadeo,255*parpadeo);
+        ComRect(HSIZE/2-10,67,HSIZE/2+11,82,1);
+        ComColor(255*parpadeo2,255*parpadeo2,255*parpadeo2);
+        sprintf(auxcc,"%02d:",minuto);
+        ComTXT(HSIZE/2+3,75,28, OPT_CENTER,auxcc);
+
+        ComColor(255,255,255);
+        sprintf(auxcc,"%02d:",hora);
+        ComTXT(HSIZE/2-30,75,28, OPT_CENTER,auxcc);
+        sprintf(auxcc,"%02d",segundo);
+        ComTXT(HSIZE/2+31,75,28, OPT_CENTER,auxcc);
+    }
+    else if(i<6){
+        ComColor(255*parpadeo,255*parpadeo,255*parpadeo);
+        ComRect(HSIZE/2+23,67,HSIZE/2+42,82,1);
+        ComColor(255*parpadeo2,255*parpadeo2,255*parpadeo2);
+        sprintf(auxcc,"%02d",segundo);
+        ComTXT(HSIZE/2+31,75,28, OPT_CENTER,auxcc);
+
+        ComColor(255,255,255);
+        sprintf(auxcc,"%02d:",hora);
+        ComTXT(HSIZE/2-30,75,28, OPT_CENTER,auxcc);
+        sprintf(auxcc,"%02d:",minuto);
+        ComTXT(HSIZE/2+3,75,28, OPT_CENTER,auxcc);
+    }
+    else{
+        ComColor(255,255,255);
+        sprintf(auxcc,"%02d",segundo);
+        ComTXT(HSIZE/2+31,75,28, OPT_CENTER,auxcc);
+        sprintf(auxcc,"%02d:",hora);
+        ComTXT(HSIZE/2-30,75,28, OPT_CENTER,auxcc);
+        sprintf(auxcc,"%02d:",minuto);
+        ComTXT(HSIZE/2+3,75,28, OPT_CENTER,auxcc);
+
+    }
 
 
     switch (estadoLecturaNumerosPantalla){
@@ -290,7 +310,7 @@ int lecturaNumerosPantalla(){
             if(numeroLeidoPantalla[i]==10){
                 estadoLecturaNumerosPantalla=reposo;
                 i=0;
-                return 1;   //Si devuelve un 1 es que se ha pulsasdo intro y se ha terminado de escribir
+                return 1;   //Si devuelve un 1 es que se ha pulsado intro y se ha terminado de escribir
             }
             else{
                 estadoLecturaNumerosPantalla=reposo;
@@ -315,19 +335,25 @@ void dibujaHora(){
 
 void updateHora(){
     milisegundo=milisegundo+20;
-    if(milisegundo==1000){
+    if(milisegundo>=1000){
         milisegundo=0;
         segundo++;
+        if(parpadeo==0){
+            parpadeo2=0;
+            parpadeo++;}
+        else{
+            parpadeo2++;
+            parpadeo=0;}
     }
-    if(segundo==60){
+    if(segundo>=60){
         segundo=0;
         minuto++;
     }
-    if(minuto==60){
+    if(minuto>=60){
         minuto=0;
         hora++;
     }
-    if(hora==24)hora=0;
+    if(hora>=24)hora=0;
 
 }
 
@@ -384,14 +410,9 @@ int main(void)
     // ================================================================================================================
     // PANTALLA INICIAL
     // ================================================================================================================
-        Nueva_pantalla(16,16,16);
-        ComColor(153,76,0);
-        ComRect(10, 10, HSIZE-10, VSIZE-10, true);
+        Nueva_pantalla(180,180,220);
         //El numerito indica el numero dela fuente que estamos usando, ver libreria pag 140
-    //    ComTXT(HSIZE/2,50+VSIZE/5, 22, OPT_CENTERX," SEPA GIERM. 2024 ");
-    //    ComTXT(HSIZE/2,100+VSIZE/5, 20, OPT_CENTERX,"M.A.P.E.");
         ComColor(255,255,255);
-    //    ComRect(40,60, HSIZE-40, VSIZE-160, true);
         ComTXT(HSIZE/2,VSIZE/2-45,30, OPT_CENTERX,"TOCA LA PANTALLA");
         ComTXT(HSIZE/2,VSIZE/2,30, OPT_CENTERX,"PARA EMPEZAR");
         Dibuja();
@@ -409,10 +430,7 @@ int main(void)
     while(1){
         SLEEP;
         Lee_pantalla();
-        Nueva_pantalla(16,16,16);
-        ComColor(153,76,0);
-        ComRect(10, 10, HSIZE-10, VSIZE-10, true);
-        ComColor(255,255,255);
+        Nueva_pantalla(180,180,220);
         ComFgcolor(0, 255, 0);
         ComColor(255,255,255);
 
@@ -426,6 +444,12 @@ int main(void)
 
         switch (estado){
             case pedirPin:
+                ComColor(255,255,255);
+                ComTXT(HSIZE/2,40,30, OPT_CENTER,"Introduzca su pin:");
+                ComColor(0,0,0);
+                ComRect(HSIZE/2-50,62,HSIZE/2+50,87,1);
+                ComColor(0,0,180);
+                ComRect(HSIZE/2-48,64,HSIZE/2+48,85,1);
                 if(verificarPinInicial())estado=acceso;
                 else estado=pedirPin;
                 segundo=0;
@@ -461,11 +485,3 @@ int main(void)
     }
 
 }
-
-
-
-
-
-
-
-
