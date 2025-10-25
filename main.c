@@ -67,6 +67,9 @@ int i;
 int hora=0,minuto=0,segundo=0,milisegundo=0;
 int auxLectura=0;
 int parpadeo,parpadeo2;
+float lux;
+int lux_i;
+
 
 
 
@@ -422,9 +425,10 @@ int main(void)
 
         i=0;
 
+        if(Detecta_BP(1))Conf_Boosterpack(1, RELOJ);
+        else if(Detecta_BP(2))Conf_Boosterpack(2, RELOJ);
 
-
-
+        OPT3001_init();
 
 
     while(1){
