@@ -13,6 +13,8 @@
 
 volatile int Flag_ints=0;
 
+char cadena;
+
 #define SLEEP SysCtlSleep()
 //#define SLEEP SysCtlSleepFake()
 
@@ -33,6 +35,7 @@ int Load;   // Variable para comprobar el % de carga del ciclo de trabajo
 int main(void)
  {
 
+int i;
 
     RELOJ=SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480), 120000000);
 
@@ -49,19 +52,20 @@ int main(void)
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOJ);
 
-    // UART conectada al módulo bluetooth
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
-    GPIOPinConfigure(GPIO_PA0_U0RX);
-    GPIOPinConfigure(GPIO_PA1_U0TX);
-    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-    UARTStdioConfig(0, 38400, RELOJ);
-
-    //UART usada para mandar datos desde el ordenador
+    //UART conectada al mÃ³dulo bluetooth
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART3);
     GPIOPinConfigure(GPIO_PJ0_U3RX);
     GPIOPinConfigure(GPIO_PJ1_U3TX);
     GPIOPinTypeUART(GPIO_PORTJ_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-    UARTStdioConfig(0, 9600, RELOJ);
+    UARTStdioConfig(0, 38400, RELOJ);
+
+    // UART usada para mandar datos desde el ordenador
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+    GPIOPinConfigure(GPIO_PA0_U0RX);
+    GPIOPinConfigure(GPIO_PA1_U0TX);
+    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+    UARTStdioConfig(0, 115200, RELOJ);
+
 
     TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_SYSTEM);   //T0 a 120MHz
     TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);    //T0 periodico y conjunto (32b)
@@ -74,6 +78,8 @@ int main(void)
     TimerEnable(TIMER0_BASE, TIMER_A);  //Habilitar Timer0, 1, 2A y 2B
 
     SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_UART0);
+    SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_UART3);
+
 
     UARTCharPutNonBlocking(UART3_BASE, "Dispositivo listo para recibir comando AT");
 
@@ -81,14 +87,22 @@ int main(void)
         SLEEP;
 
         if(UARTCharsAvail(UART0_BASE)){
-                UARTCharPutNonBlocking(UART3_BASE, UARTCharGetNonBlocking(UART0_BASE));
-                UARTCharPutNonBlocking(UART0_BASE, UARTCharGetNonBlocking(UART0_BASE));
-
+            cadena=UARTCharGetNonBlocking(UART0_BASE);
+            UARTCharPutNonBlocking(UART3_BASE, cadena);
+            UARTCharPutNonBlocking(UART0_BASE, cadena);
+            if (i==0){
+                UARTprintf("\n");
+                i=1;
+            }
         }
 
         if(UARTCharsAvail(UART3_BASE)){
-                UARTCharPutNonBlocking(UART0_BASE, UARTCharGetNonBlocking(UART3_BASE));
-
+            cadena=UARTCharGetNonBlocking(UART3_BASE);
+            UARTCharPutNonBlocking(UART0_BASE, cadena);
+            if (i==1){
+                UARTprintf("\n");
+                i=0;
+            }
         }
     }
 }
