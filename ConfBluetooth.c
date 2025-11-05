@@ -12,11 +12,16 @@
 #define byte char
 
 volatile int Flag_ints=0;
+char  cadena,msg;
 
-char cadena;
+//#define SLEEP SysCtlSleep()
+#define SLEEP SysCtlSleepFake()
 
-#define SLEEP SysCtlSleep()
-//#define SLEEP SysCtlSleepFake()
+void SysCtlSleepFake(void)
+{
+    while(!Flag_ints);
+    Flag_ints=0;
+}
 
 #define NUM_SSI_DATA            3
 
@@ -35,8 +40,6 @@ int Load;   // Variable para comprobar el % de carga del ciclo de trabajo
 int main(void)
  {
 
-int i;
-
     RELOJ=SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480), 120000000);
 
     // =======================================================================
@@ -50,21 +53,25 @@ int i;
     // ================================================================================================================
     SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);       //Habilita T0
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOJ);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
 
-    //UART conectada al mÃ³dulo bluetooth
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART3);
-    GPIOPinConfigure(GPIO_PJ0_U3RX);
-    GPIOPinConfigure(GPIO_PJ1_U3TX);
-    GPIOPinTypeUART(GPIO_PORTJ_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-    UARTStdioConfig(0, 38400, RELOJ);
+    GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE,GPIO_PIN_1);
+
+    //UART conectada al módulo bluetooth
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART2);
+    GPIOPinConfigure(GPIO_PD4_U2RX);
+    GPIOPinConfigure(GPIO_PD5_U2TX);
+    GPIOPinTypeUART(GPIO_PORTD_BASE, GPIO_PIN_4 | GPIO_PIN_5);
+    UARTStdioConfig(2, 9600, RELOJ);
+
 
     // UART usada para mandar datos desde el ordenador
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
     GPIOPinConfigure(GPIO_PA0_U0RX);
     GPIOPinConfigure(GPIO_PA1_U0TX);
     GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-    UARTStdioConfig(0, 115200, RELOJ);
+    UARTStdioConfig(0, 9600, RELOJ);
 
 
     TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_SYSTEM);   //T0 a 120MHz
@@ -77,32 +84,36 @@ int i;
     IntMasterEnable();  //Habilitacion global de interrupciones
     TimerEnable(TIMER0_BASE, TIMER_A);  //Habilitar Timer0, 1, 2A y 2B
 
-    SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_UART0);
-    SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_UART3);
+    //SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_UART0);
+    SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_UART2);
 
 
-    UARTCharPutNonBlocking(UART3_BASE, "Dispositivo listo para recibir comando AT");
+    UARTprintf("\r\n[TM4C129] Sistema listo. Envia AT+\r\n");
 
     while(1){
         SLEEP;
 
         if(UARTCharsAvail(UART0_BASE)){
-            cadena=UARTCharGetNonBlocking(UART0_BASE);
-            UARTCharPutNonBlocking(UART3_BASE, cadena);
-            UARTCharPutNonBlocking(UART0_BASE, cadena);
-            if (i==0){
-                UARTprintf("\n");
-                i=1;
+            msg=UARTCharGetNonBlocking(UART0_BASE);
+            UARTCharPutNonBlocking(UART2_BASE, msg);
+            UARTCharPutNonBlocking(UART2_BASE, '\n');
+            if(msg=='1'){
+                GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, GPIO_PIN_1);
+                UARTCharPutNonBlocking(UART0_BASE, '1');
+                UARTCharPutNonBlocking(UART0_BASE, '\n');
+            }
+            else{
+                GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, 0);
+                UARTCharPutNonBlocking(UART0_BASE, msg);
+                UARTCharPutNonBlocking(UART0_BASE, '\n');
             }
         }
 
-        if(UARTCharsAvail(UART3_BASE)){
-            cadena=UARTCharGetNonBlocking(UART3_BASE);
+
+        if(UARTCharsAvail(UART2_BASE)){
+            cadena=UARTCharGetNonBlocking(UART2_BASE);
+            UARTCharPutNonBlocking(UART2_BASE, cadena);
             UARTCharPutNonBlocking(UART0_BASE, cadena);
-            if (i==1){
-                UARTprintf("\n");
-                i=0;
-            }
         }
     }
 }
