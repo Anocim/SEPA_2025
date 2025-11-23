@@ -720,7 +720,7 @@ int Battleship(){
 
         // Botón de giro sin rebote
         ComColor(255,255,255);
-        ComBgcolor(255,80,80);
+        ComFgcolor(80,80,200);
         if (Boton(325,100,50,50,29,"Giro") && aux2==0)
             aux2=1;
         else if (!Boton(325,100,50,50,29,"Giro") && aux2==1){
@@ -850,7 +850,7 @@ int Battleship(){
 
         // Botón de confirmar el cuadro
         ComColor(255,255,255);
-        ComBgcolor(255,80,80);
+        ComFgcolor(80,80,200);
         //Se bloquea si se ha pulsado una vez o si no se ha pulsado nunca en el mapa
         if (marcado==0 || Confpuls==1){
             ComButton(300,150,110,50,29,OPT_FLAT,"Confirmar");
@@ -966,7 +966,7 @@ int Battleship(){
 
         // Botón de pasar turno
         ComColor(255,255,255);
-        ComBgcolor(255,80,80);
+        ComFgcolor(80,80,200);
         if (Boton(300,45,130,50,29,"Pasar turno") && aux1==0)
             aux1=1;
         else if (!Boton(300,45,130,50,29,"Pasar turno") && aux1==1){
@@ -1121,7 +1121,7 @@ int Battleship(){
     }
 
     ComColor(0,0,0);
-    ComBgcolor(255,0,0);
+    ComFgcolor(255,0,0);
     if (Boton(HSIZE-50,10,40,30,29,"X") && aux3==0)
         aux3=1;
     else if (!Boton(HSIZE-50,10,40,30,29,"X") && aux3==1){
