@@ -508,9 +508,9 @@ int Colisionbarcos(int barcoPuesto,int cadena1, int cadena2){
 //
 // Variables que necesitan inicialización, aquí o encima del main
 //
-    int i=0;
-    int k=0;
-    int j=0;
+    int i;
+    int k;
+    int j;
     int salir;
     int cuadrox= 37 +22*4, cuadroy= 37 +22*4, giro=0;
     int cuadrox2=37 + 22*4, cuadroy2=37 + 22*4, giro2=0, cuadrox3=37 + 22*4, cuadroy3=37 + 22*4, giro3=0, cuadrox3_0=37 + 22*4, cuadroy3_0=37 + 22*4, giro3_0=0, cuadrox4=37 + 22*4, cuadroy4=37 + 22*4, giro4=0;
@@ -546,7 +546,7 @@ int Colisionbarcos(int barcoPuesto,int cadena1, int cadena2){
     int leido=1, reintento=0, Confpuls=0;
     char buffer[9];
     int bloqueoMsgReint=0;
-    int aux1, aux2;
+    int aux1, aux2, aux3;
     int marcado;
 
 //*****************************************************************************
@@ -567,7 +567,7 @@ int Battleship(){
     case colocar:   //Estado para colocar los barcos
 
         //Pintar mapa de agua
-        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37 + 22*i, 37 + 22*j);
+        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37, 37);
 
         // Un if para que se pinten 4 barcos k de 0 a 4
         if (k==0){
@@ -761,7 +761,7 @@ int Battleship(){
 
     case validar:
         //Pintar mapa de agua
-        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37 + 22*i, 37 + 22*j);
+        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37, 37);
 
         //Pintar todos los barcos puestos
         if (giro4==0 || giro4==2)
@@ -825,7 +825,7 @@ int Battleship(){
 
         // Pinatr mapa del agua más oscuro
         ComColor(255,0,255);
-        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37 + 22*i, 37 + 22*j);
+        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37, 37);
 
         // Pintar colisiones anteriores en rojo
         ComColor(200,0,0);
@@ -940,7 +940,7 @@ int Battleship(){
     case resultado:
         // Pintar mapa de agua como en marcar
         ComColor(255,0,255);
-        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37 + 22*i, 37 + 22*j);
+        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37, 37);
 
         // Pintar cuadro marcado previamente
         ComColor(0,255,255);
@@ -995,7 +995,7 @@ int Battleship(){
             estadobattleship=final;
 
         // Pintar mapa de agua
-        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37 + 22*i, 37 + 22*j);
+        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37, 37);
 
         // Pintar todos los barcos puestos
         if (giro4==0 || giro4==2)
@@ -1089,7 +1089,7 @@ int Battleship(){
     case final:
         // Mapa de agua como en marcar
         ComColor(255,0,255);
-        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37 + 22*i, 37 + 22*j);
+        ComBITMAP(dir_mapaagua, MAPAAGUA_WIDTH, MAPAAGUA_HEIGHT,1, 0, 37, 37);
 
         // Se muestran las colisiones obtenidas en rojo
         ComColor(200,0,0);
@@ -1122,11 +1122,11 @@ int Battleship(){
 
     ComColor(0,0,0);
     ComBgcolor(255,0,0);
-    if (Boton(HSIZE-50,10,40,30,29,"X") && aux1==0)
-        aux1=1;
-    else if (!Boton(HSIZE-50,10,40,30,29,"X") && aux1==1){
+    if (Boton(HSIZE-50,10,40,30,29,"X") && aux3==0)
+        aux3=1;
+    else if (!Boton(HSIZE-50,10,40,30,29,"X") && aux3==1){
         salir=1;
-        aux1=0;
+        aux3=0;
 
     }
 
