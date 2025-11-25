@@ -287,11 +287,11 @@ void Mandarmsg(char mensaje[]){
 //
 char *Leermsg(){
 
-        //while(UARTCharsAvail(UART2_BASE)){                        //Descomentar
-        while(UARTCharsAvail(UART0_BASE)){                          //Eliminar esto
-            cadenaleida[ind]=UARTCharGetNonBlocking(UART0_BASE);
+        while(UARTCharsAvail(UART2_BASE)){                        //Descomentar
+        //while(UARTCharsAvail(UART0_BASE)){                          //Eliminar esto
+            //cadenaleida[ind]=UARTCharGetNonBlocking(UART0_BASE);
 
-            //cadenaleida[ind]=UARTCharGetNonBlocking(UART2_BASE);  //Descomentar
+            cadenaleida[ind]=UARTCharGetNonBlocking(UART2_BASE);  //Descomentar
             UARTCharPutNonBlocking(UART0_BASE, cadenaleida[ind]);
             //UARTCharPutNonBlocking(UART2_BASE, cadenaleida[ind]); //Descomentar
             //No era un mensaje
